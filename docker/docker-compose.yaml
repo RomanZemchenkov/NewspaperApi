@@ -1,0 +1,29 @@
+version: "3.9"
+
+networks:
+  app-tier:
+    driver: "bridge"
+
+services:
+  database:
+    image: "postgres:16.3"
+    ports:
+      - "5432:5432"
+    networks:
+      - app-tier
+    environment:
+      - "POSTGRES_USER=roman"
+      - "POSTGRES_PASSWORD=1234"
+      - "POSTGRES_DB=newspaper_db"
+
+  webapp:
+    image: "newspaper-api:0.1.0"
+    ports:
+      - "8080:8080"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}"
+      - "DATABASE_NAME=database"
+    networks:
+      - app-tier
+    depends_on:
+      - "database"

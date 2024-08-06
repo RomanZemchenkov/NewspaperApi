@@ -1,0 +1,5 @@
+<configuration>
+
+    <include resource="loggers/initializationLogger.xml"/>
+
+</configuration>

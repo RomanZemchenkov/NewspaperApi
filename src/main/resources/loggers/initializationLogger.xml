@@ -1,0 +1,15 @@
+<configuration>
+    <Appender name="CONSOLE_APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </Appender>
+
+    <Appender name="ASYNC_CONSOLE_APPENDER" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="CONSOLE_APPENDER"/>
+    </Appender>
+
+    <Logger name="INIT_LOGGER" LEVEL="INFO" additivity="false">
+        <appender-ref ref="ASYNC_CONSOLE_APPENDER"/>
+    </Logger>
+</configuration>
