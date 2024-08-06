@@ -9,6 +9,7 @@ public class NewsFilter {
 
     private String title;
     private String text;
+    private String categoryId;
 
     private NewsFilter(){}
 
@@ -26,6 +27,11 @@ public class NewsFilter {
 
         public Builder text(String text){
             filter.setText(text);
+            return this;
+        }
+
+        public Builder categoryId(String id){
+            filter.setCategoryId(id);
             return this;
         }
 

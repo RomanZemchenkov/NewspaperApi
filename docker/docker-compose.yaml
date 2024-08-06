@@ -17,7 +17,7 @@ services:
       - "POSTGRES_DB=newspaper_db"
 
   webapp:
-    image: "newspaper-api:0.1.0"
+    image: "newspaper-api:0.1.1"
     ports:
       - "8080:8080"
     environment:

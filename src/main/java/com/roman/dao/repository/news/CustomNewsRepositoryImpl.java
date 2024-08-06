@@ -57,6 +57,10 @@ public class CustomNewsRepositoryImpl implements CustomNewsRepository{
         if(title != null && !title.isEmpty()){
             predicate.and(title, t -> cb.equal(root.get("title"),t));
         }
+        String categoryId = filter.getCategoryId();
+        if(categoryId != null && !categoryId.isEmpty()){
+            predicate.and(categoryId,ci -> cb.equal(root.get("category").get("id"),ci));
+        }
         return predicate.finish();
     }
 

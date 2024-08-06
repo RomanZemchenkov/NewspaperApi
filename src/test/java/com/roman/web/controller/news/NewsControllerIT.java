@@ -18,6 +18,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.stream.Stream;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @AutoConfigureMockMvc
 @SpringBootTest
 public class NewsControllerIT extends BaseServiceAndWebTest {
@@ -45,10 +48,10 @@ public class NewsControllerIT extends BaseServiceAndWebTest {
                          }
                          """.formatted(title,text,EXIST_CATEGORY_ID)));
         if (shouldBeException) {
-            actions.andExpect(MockMvcResultMatchers.status().isConflict())
+            actions.andExpect(status().isConflict())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is(exception)));
         } else {
-            actions.andExpect(MockMvcResultMatchers.status().isCreated())
+            actions.andExpect(status().isCreated())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(id)))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is(title)))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.text", Matchers.is(text)));
@@ -71,10 +74,10 @@ public class NewsControllerIT extends BaseServiceAndWebTest {
     void findNewsById(String id, boolean shouldBeException) throws Exception {
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.post("/api/news/" + id));
         if (shouldBeException) {
-            actions.andExpect(MockMvcResultMatchers.status().isNotFound())
+            actions.andExpect(status().isNotFound())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Новость с id " + id + " не существует.")));
         } else {
-            actions.andExpect(MockMvcResultMatchers.status().isOk())
+            actions.andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(id)));
         }
     }
@@ -93,10 +96,10 @@ public class NewsControllerIT extends BaseServiceAndWebTest {
     void findAllNews(int expectedCount, boolean shouldBeException) throws Exception {
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/api/news"));
         if(shouldBeException){
-            actions.andExpect(MockMvcResultMatchers.status().isOk())
+            actions.andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$",Matchers.not(Matchers.hasSize(expectedCount))));
         } else {
-            actions.andExpect(MockMvcResultMatchers.status().isOk())
+            actions.andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(expectedCount)));
         }
     }
@@ -105,6 +108,27 @@ public class NewsControllerIT extends BaseServiceAndWebTest {
         return Stream.of(
                 Arguments.of(1,false),
                 Arguments.of(2,true)
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Тест поиска всех новостей по id категории")
+    @MethodSource("argumentsForFindAllByCategoryIdTest")
+    void findAllByCategoryId(String categoryId,int countResult, boolean shouldBeException, String exceptionMessage) throws Exception {
+        ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.get("/api/news/category/" + categoryId));
+        if(shouldBeException){
+            actions.andExpect(status().is4xxClientError())
+                    .andExpect(jsonPath("$.message",Matchers.is(exceptionMessage)));
+        } else {
+            actions.andExpect(status().isOk())
+                    .andExpect(jsonPath("$",Matchers.hasSize(countResult)));
+        }
+    }
+
+    static Stream<Arguments> argumentsForFindAllByCategoryIdTest() {
+        return Stream.of(
+                Arguments.of("2",0,true,"Категория с id 2 не существует."),
+                Arguments.of("1",1,false,WITHOUT_EXCEPTION)
         );
     }
 
@@ -127,10 +151,10 @@ public class NewsControllerIT extends BaseServiceAndWebTest {
                         }
                         """.formatted(id, title, text, categoryId)));
         if (shouldBeException) {
-            actions.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+            actions.andExpect(status().is4xxClientError())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message",Matchers.is(exception)));
         } else {
-            actions.andExpect(MockMvcResultMatchers.status().isOk())
+            actions.andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(id)))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.title", Matchers.is(title)))
                     .andExpect(MockMvcResultMatchers.jsonPath("$.text", Matchers.is(text)));
@@ -153,10 +177,10 @@ public class NewsControllerIT extends BaseServiceAndWebTest {
     void deleteNewsById(String id, boolean shouldBeException) throws Exception {
         ResultActions actions = mockMvc.perform(MockMvcRequestBuilders.delete("/api/news/" + id));
         if(shouldBeException){
-            actions.andExpect(MockMvcResultMatchers.status().isNotFound())
+            actions.andExpect(status().isNotFound())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message",Matchers.is("Новость с id " + id + " не существует.")));
         } else {
-            actions.andExpect(MockMvcResultMatchers.status().isNoContent())
+            actions.andExpect(status().isNoContent())
                     .andExpect(MockMvcResultMatchers.jsonPath("$.message",Matchers.is("Новость с id " + id + " удалена.")));
         }
     }

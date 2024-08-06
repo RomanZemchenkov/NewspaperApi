@@ -43,6 +43,12 @@ public class NewsController {
         return new ResponseEntity<>(news,HttpStatus.OK);
     }
 
+    @GetMapping("/category/{id}")
+    public ResponseEntity<List<ShowNewsDto>> findAllByCategoryId(@PathVariable("id") String id){
+        List<ShowNewsDto> news = findService.finaAllByCategory(id);
+        return new ResponseEntity<>(news,HttpStatus.OK);
+    }
+
     @PutMapping
     public ResponseEntity<ShowNewsDto> update(@RequestBody UpdateNewsDto dto){
         ShowNewsDto updatedNews = updateService.update(dto);
