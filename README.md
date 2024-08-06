@@ -11,7 +11,7 @@
 
 ### Клонирование проекта
 ```bash
- git clone https://gitlab.skillbox.ru/roman_zemchenkov/java_basics.git
+ git clone https://github.com/RomanZemchenkov/NewspaperApi.git
 ```
 
 ### Сборка проекта
